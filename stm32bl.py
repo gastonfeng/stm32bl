@@ -130,9 +130,9 @@ class Stm32bl():
 
     def _reset_mcu(self):
         """Reset MCU"""
-        self._serial_port.setDTR(0)
-        time.sleep(0.1)
         self._serial_port.setDTR(1)
+        time.sleep(0.1)
+        self._serial_port.setDTR(0)
         time.sleep(0.2)
 
     def _connect(self, repeat=1):
@@ -245,6 +245,13 @@ class Stm32bl():
         dev_id = (res[1] << 8) + res[2]
         self.log("%04x" % dev_id, 'DEV_ID', level=1)
         return dev_id
+
+    def _cmd_get_sn(self):
+        bs = self._cmd_read_memory(0x1FFFF7E8, 12)
+        sn=''
+        for b in bs:
+            sn += '%02x'%b
+        self.log("%s" % sn, 'CPU_SN', level=1)
 
     def _cmd_read_memory(self, address, length):
         """Reads up to 256 bytes of memory starting from an
