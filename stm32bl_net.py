@@ -1,9 +1,9 @@
 from socket import socket, AF_INET, SOCK_STREAM
 
-from stm32bl import Stm32bl, ConnectingException
+from stm32bl import stm32bls
 
 
-class stm32bl_net(Stm32bl):
+class stm32bl_net(stm32bls.Stm32bl):
     def __init__(self, url, port=23, verbosity=1):
         self.host = url
         self.port = port
@@ -19,6 +19,10 @@ class stm32bl_net(Stm32bl):
         self._option_bytes = self._cmd_get_version()
         self._dev_id = self._cmd_get_id()
         self._sn = self._cmd_get_sn()
+        self.connected = True
+
+    def info(self):
+        return dict(cpuId=self._sn, bootversion=self._boot_version, dev_id=self._dev_id, connected=self.connected)
 
     def _connect(self, repeat=1):
         """connect to boot-loader"""
@@ -30,7 +34,7 @@ class stm32bl_net(Stm32bl):
             if ret and ret[0] in (self.CMD_ACK, self.CMD_NOACK):
                 return
             repeat -= 1
-        raise ConnectingException("Can't connect to MCU boot-loader.")
+        raise stm32bls.ConnectingException("Can't connect to MCU boot-loader.")
 
     def _write(self, data):
         """Write data to serial port"""

@@ -1,9 +1,9 @@
 """STM32 MCU serial firmware loader"""
 
-import time
 import argparse
-import serial
+import time
 
+import serial
 
 VERSION_STR = "stm32bl v0.0.0"
 
@@ -16,26 +16,34 @@ https://github.com/pavelrevak/stm32bl
 class Stm32BLException(Exception):
     """General STM32 loader exception"""
 
+
 class SerialException(Stm32BLException):
     """Serial communication Exception"""
+
 
 class ConnectingException(Stm32BLException):
     """Connecting to boot-loader exception"""
 
+
 class NoAnswerException(Stm32BLException):
     """No answer exception"""
+
 
 class CommandNotAllowedException(Stm32BLException):
     """Command not allowed exception"""
 
+
 class UnexpectedAnswerException(Stm32BLException):
     """Unexpected answer exception"""
+
 
 class NoAckException(Stm32BLException):
     """General No ACK exception"""
 
+
 class NoAckCommandException(NoAckException):
     """No ACK after command exception"""
+
 
 class NoAckDataException(NoAckException):
     """No ACK after data exception"""
@@ -62,7 +70,7 @@ class Stm32bl():
 
     FLASH_START = 0x08000000
 
-    def __init__(self, port, baudrate=19200, verbosity=1):
+    def __init__(self, port, baudrate=115200, verbosity=1):
         try:
             self._serial_port = serial.Serial(
                 port=port,
@@ -79,6 +87,7 @@ class Stm32bl():
         self._boot_version = self._cmd_get()
         self._option_bytes = self._cmd_get_version()
         self._dev_id = self._cmd_get_id()
+
 
     @staticmethod
     def print_buffer(addr, data, bytes_per_line=16):
@@ -248,10 +257,9 @@ class Stm32bl():
 
     def _cmd_get_sn(self):
         bs = self._cmd_read_memory(0x1FFFF7E8, 12)
-        sn=''
-        for b in bs:
-            sn += '%02x'%b
+        sn = '%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x' % (bs[3],bs[2],bs[1],bs[0],bs[7],bs[6],bs[5],bs[4],bs[11],bs[10],bs[9],bs[8],)
         self.log("%s" % sn, 'CPU_SN', level=1)
+        return sn
 
     def _cmd_read_memory(self, address, length):
         """Reads up to 256 bytes of memory starting from an
@@ -473,6 +481,7 @@ def main():
             stm32bl.exit_bootloader()
     except Stm32BLException as err:
         print("ERROR: %s" % err)
+
 
 if __name__ == "__main__":
     main()
