@@ -257,6 +257,7 @@ class Stm32bl():
 
     def _cmd_get_sn(self):
         bs = self._cmd_read_memory(0x1FFFF7E8, 12)
+        if len(bs) != 12: raise UnexpectedAnswerException("CMD_GET_SN: wrong result length.")
         sn = '%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x' % (bs[3],bs[2],bs[1],bs[0],bs[7],bs[6],bs[5],bs[4],bs[11],bs[10],bs[9],bs[8],)
         self.log("%s" % sn, 'CPU_SN', level=1)
         return sn

@@ -12,7 +12,7 @@ class stm32bl_net(stm32bls.Stm32bl):
         self.sock.settimeout(0.1)
         self._verbosity = verbosity
         self._connect(100)
-        self._read(10, 1)
+        self._read(100, 1)
 
         self._allowed_commands = [self.CMD_GET, ]
         self._boot_version = self._cmd_get()
