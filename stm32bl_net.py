@@ -4,7 +4,8 @@ from stm32bl import stm32bls
 
 
 class stm32bl_net(stm32bls.Stm32bl):
-    def __init__(self, url, port=23, verbosity=1):
+    def __init__(self, url, port=23,logger=None, verbosity=1):
+        self.logger=logger
         self.host = url
         self.port = port
         self.sock = socket(AF_INET, SOCK_STREAM)

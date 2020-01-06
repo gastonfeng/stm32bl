@@ -70,7 +70,7 @@ class Stm32bl():
 
     FLASH_START = 0x08000000
 
-    def __init__(self, port, baudrate=115200, verbosity=1):
+    def __init__(self, port, baudrate=115200,logger=None, verbosity=1):
         try:
             self._serial_port = serial.Serial(
                 port=port,
@@ -81,6 +81,7 @@ class Stm32bl():
             )
         except (FileNotFoundError, serial.serialutil.SerialException):
             raise SerialException("Error opening serial port: %s" % port)
+        self.logger=logger
         self._verbosity = verbosity
         self._connect(5)
         self._allowed_commands = [self.CMD_GET, ]
@@ -121,7 +122,7 @@ class Stm32bl():
         if operation:
             msg += '%s: ' % operation
         msg += message
-        print(msg)
+        self.logger.write(msg)
 
     def _write(self, data):
         """Write data to serial port"""
